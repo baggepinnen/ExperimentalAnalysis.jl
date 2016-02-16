@@ -38,11 +38,10 @@ function scattermatrix(df::DataFrame, f::Formula)
   scattermatrix(df[map(Symbol,rhs[2:end])])
 end
 
-# Potential Bug in DataFrames
-# function scattermatrix{T<:AbstractString}(A::AbstractMatrix, names::AbstractVector{T})
-#   df = DataFrame([A[:,i] for i = 1:size(A,2)], map(Symbol,names))
-#   scattermatrix(df)
-# end
+function scattermatrix{T<:AbstractString}(A::AbstractMatrix, names::AbstractVector{T})
+  df = DataFrame(Any[A[:,i] for i = 1:size(A,2)], map(Symbol,names))
+  scattermatrix(df)
+end
 
 
 
