@@ -1,5 +1,5 @@
 module ExperimentalAnalysis
-
-# package code goes here
+export perform_example_analysis, scattermatrix
+include("analysis.jl")
 
 end # module
