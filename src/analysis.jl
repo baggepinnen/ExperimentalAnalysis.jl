@@ -2,7 +2,15 @@ using DataFrames
 using GLM
 using Plots
 
+"""
+`scattermatrix(df::DataFrame)`
 
+`scattermatrix(df::DataFrame, f::Formula)`
+
+`scattermatrix(A::AbstractMatrix)`
+
+Plot a scatter matrix of a DataFrame or a numerical matrix
+"""
 function scattermatrix(df::DataFrame)
   (N, Nparams) = size(df)
   p = Plots.subplot(n = Nparams^2, nr=Nparams)
