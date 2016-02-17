@@ -29,6 +29,12 @@ function scattermatrix(df::DataFrame)
     plot!(p[1,i], title=names_[i])
     plot!(p[i,1], ylabel=names_[i])
   end
+  for i = 1:Nparams-1, j = 1:Nparams
+    plot!(p[i,j], xticks=Float64[])
+  end
+  for i = 1:Nparams, j = 2:Nparams
+    plot!(p[i,j], yticks=Float64[])
+  end
   return p
 end
 
