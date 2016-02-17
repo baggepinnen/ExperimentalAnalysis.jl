@@ -13,6 +13,10 @@
 
 `modelheatmap{T<:DataFrameRegressionModel}(modelnames, models::AbstractArray{T})`
 
+##Example figures
+![window](images/heatmap.eps)
+
+
 
 ##Usage examples
 ```julia
