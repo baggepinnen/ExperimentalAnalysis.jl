@@ -14,7 +14,7 @@
 `modelheatmap{T<:DataFrameRegressionModel}(modelnames, models::AbstractArray{T})`
 
 ##Example figures
-![window](images/heatmap.eps)
+![window](images/heatmap.png)
 
 
 
