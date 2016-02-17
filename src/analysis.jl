@@ -25,10 +25,10 @@ function scattermatrix(df::DataFrame)
       end
     end
   end
-  names_ = names(df)
+  names_ = map(string,names(df))
   for i = 1:Nparams
-    plot!(p[1,i], title="\$"*names_[i]*"\$")
-    plot!(p[i,1], ylabel="\$"*names_[i]*"\$")
+    plot!(p[1,i], title=("\$"*names_[i]*"\$"))
+    plot!(p[i,1], ylabel=("\$"*names_[i]*"\$"))
   end
   for i = 1:Nparams-1, j = 1:Nparams
     plot!(p[i,j], xticks=Float64[])
@@ -56,13 +56,10 @@ function scattermatrix{T<:AbstractString}(A::AbstractMatrix, names::AbstractVect
 end
 
 
-
 function scattermatrix(A::AbstractMatrix)
   df = DataFrame(A)
   scattermatrix(df)
 end
-
-
 
 
 function scattermatrix_someofothers(df::DataFrame, f::Formula)
