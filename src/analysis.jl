@@ -27,8 +27,8 @@ function scattermatrix(df::DataFrame)
   end
   names_ = names(df)
   for i = 1:Nparams
-    plot!(p[1,i], title=names_[i])
-    plot!(p[i,1], ylabel=names_[i])
+    plot!(p[1,i], title="\$"*names_[i]*"\$")
+    plot!(p[i,1], ylabel="\$"*names_[i]*"\$")
   end
   for i = 1:Nparams-1, j = 1:Nparams
     plot!(p[i,j], xticks=Float64[])
@@ -75,8 +75,8 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula)
   namesr = Array(AbstractString,Nr)
   for (i,is) = enumerate(f.lhs.args[2:end])
     for (j,js) = enumerate(f.rhs.args[2:end])
-      namesl[i] = string(is)
-      namesr[j] = string(js)
+      namesl[i] = "\$"*string(is)*"\$"
+      namesr[j] = "\$"*string(js)*"\$"
       if is != js
         Plots.scatter!(p[i,j],df[js],df[is],legend=false, grid=false)
       else

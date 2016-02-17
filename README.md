@@ -15,6 +15,7 @@
 
 ##Example figures
 ![window](images/heatmap.png)
+![window](images/scatterplot.png)
 
 
 
