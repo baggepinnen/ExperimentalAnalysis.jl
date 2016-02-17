@@ -14,7 +14,11 @@
 `modelheatmap{T<:DataFrameRegressionModel}(modelnames, models::AbstractArray{T})`
 
 ##Example figures
+###modelheatmap
+The heatmap shows log(P)-values of the estimated parameters in a set of (generalized) linear models (GLM.jl package).
 ![window](images/heatmap.png)
+###scattermatrix
+The scattermatrix shows a number of variables in a DataFrame, (or a number of columns in a matrix), as a function of other variables (columns). If no extra arguments are given, all variales are plotted as a function of each other. A histogram is plotted instead of a variable as a function of itself.
 ![window](images/scatterplot.png)
 
 
