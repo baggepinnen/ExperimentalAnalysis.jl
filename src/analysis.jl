@@ -10,6 +10,8 @@ import PyPlot
 
 `scattermatrix(A::AbstractMatrix)`
 
+`scattermatrix{T<:AbstractString}(A::AbstractMatrix, names::AbstractVector{T})`
+
 Plot a scatter matrix of a DataFrame or a numerical matrix
 """
 function scattermatrix(df::DataFrame)
@@ -98,7 +100,15 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula)
 end
 
 
-modelheatmap(modelnames, models...) = modelheatmap(modelnames, collect(models))
+
+
+"""
+`modelheatmap{T<:DataFrameRegressionModel}(modelnames, models::AbstractArray{T})`
+
+`modelheatmap(modelnames, models...)`
+
+Plot a heatmap with color coded log(p)-values of the coefficients in a set (vector or list) of models
+"""
 function modelheatmap{T<:DataFrames.DataFrameRegressionModel}(modelnames, models::AbstractArray{T})
     Nmodels = length(models)
     Nparams = length(coef(models[1].model))
@@ -119,11 +129,12 @@ function modelheatmap{T<:DataFrames.DataFrameRegressionModel}(modelnames, models
     p
 end
 
+modelheatmap(modelnames, models...) = modelheatmap(modelnames, collect(models))
 
 
-
-# Example
-
+"""
+Example function to illustrate the kind of plots available
+"""
 function perform_example_analysis()
   A = readcsv(Pkg.dir("ExperimentalAnalysis","src","results.csv"));
 
@@ -140,7 +151,7 @@ function perform_example_analysis()
   df = df[14:end,:];
 
   model = lm(percentage ~ galacosidase +  endomannanase + Firstratio + Duration, df)
-
+  modelheatmap(["Model"], model)
   scattermatrix(df[[:percentage, :galacosidase, :endomannanase, :Biocelulasa, :Firstratio, :Secondratio, :Duration]])
 
   return nothing
