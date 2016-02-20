@@ -49,11 +49,12 @@ function scattermatrix(df::DataFrame; reglines = false)
   # Plot df
   for (i,is) = enumerate(names(df))
     for (j,js) = enumerate(names(df))
-      x = df[Symbol(js)]
+      x = convert(Array,df[Symbol(js)],0)
       if i != j
-        Plots.scatter!(p[i,j],x,df[Symbol(is)],legend=false,grid=true)
+        y = convert(Array,df[Symbol(is)],0)
+        Plots.scatter!(p[i,j],x,y,legend=false,grid=true)
         if reglines
-          k = [x ones(N)]\df[Symbol(is)]
+          k = [x ones(N)]\y
           px = [minimum(x), maximum(x)]
           Plots.plot!(p[i,j], px, k[1].*px + k[2], c=:red)
         end
