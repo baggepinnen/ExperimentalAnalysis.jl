@@ -100,8 +100,7 @@ end
 
 
 scattermatrix(model::DataFrames.DataFrameRegressionModel) = scattermatrix([model])
-using Debug
-@debug function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractVector{T})
+function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractVector{T})
   Nparams = size(models[1].model.pp.X,2)-1
   Nmodels = length(models)
   p = Plots.subplot(n=Nmodels*Nparams, nc=Nparams)
@@ -119,7 +118,6 @@ using Debug
     yhat = predict(model)
     for j = 1:size(data,2)
       x = data[:,j]
-      # @bp
       Plots.scatter!(p[i,j],x,y,legend=false,grid=true)
       # Regline
       minx,mini = findmin(x)
