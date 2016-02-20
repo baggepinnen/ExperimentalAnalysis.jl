@@ -20,12 +20,17 @@ The heatmap shows log(P)-values of the estimated parameters in a set of (general
 ###scattermatrix
 The scattermatrix shows a number of variables in a DataFrame, (or a number of columns in a matrix), as a function of other variables (columns). If no extra arguments are given, all variales are plotted as a function of each other. A histogram is plotted instead of a variable as a function of itself.
 
+The scatter matrix can also show a regression model as identified by GLM.jl, where the model is drawn as line, colorcoded with log(P)-values
+
 ```julia
-scattermatrix(df, ex + ey + ez + er ~ Npart + σW1 + σV1 + σV2 + σV3)
+scattermatrix([[modelx,modely,modelz,modelr]])
 ```
 results in
 ![window](images/scatterplot.png)
-
+If no regression lines are wanted, a similar result can be obtained with a syntax like
+```julia
+scattermatrix(df, ex + ey + ez + er ~ Npart + σW1 + σV1 + σV2 + σV3)
+```
 
 
 ##Usage examples
