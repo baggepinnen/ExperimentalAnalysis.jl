@@ -2,16 +2,23 @@
 
 
 ##Functions
+`scattermatrix(df::DataFrame; reglines = false)`
 
-`scattermatrix(df::DataFrame)`
+`scattermatrix(df::DataFrame, f::Formula; reglines = false)`
 
-`scattermatrix(df::DataFrame, f::Formula)`
+`scattermatrix(A::AbstractMatrix; reglines = false)`
 
-`scattermatrix(A::AbstractMatrix)`
+`scattermatrix(m::RegressionModel)` Useful together with e.g. GLM.jl
 
-`scattermatrix{T<:AbstractString}(A::AbstractMatrix, names::AbstractVector{T})`
+`scattermatrix(models::Array{::RegressionModel})` Should only be used if all models have the same independent parameters, but predict different response
 
-`modelheatmap{T<:DataFrameRegressionModel}(modelnames, models::AbstractArray{T})`
+`modelheatmap(modelnames::AbstractArray, models::AbstractArray)`
+
+`modelheatmap(models::AbstractArray)`
+
+`modelheatmap(model::DataFrameRegressionModel)`
+
+`modelheatmap(modelnames::AbstractArray, models...)`
 
 ##Example figures
 ###modelheatmap
