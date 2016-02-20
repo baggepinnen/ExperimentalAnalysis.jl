@@ -19,6 +19,11 @@ The heatmap shows log(P)-values of the estimated parameters in a set of (general
 ![window](images/heatmap.png)
 ###scattermatrix
 The scattermatrix shows a number of variables in a DataFrame, (or a number of columns in a matrix), as a function of other variables (columns). If no extra arguments are given, all variales are plotted as a function of each other. A histogram is plotted instead of a variable as a function of itself.
+
+```julia
+scattermatrix(df, ex + ey + ez + er ~ Npart + σW1 + σV1 + σV2 + σV3)
+```
+results in
 ![window](images/scatterplot.png)
 
 
@@ -26,10 +31,11 @@ The scattermatrix shows a number of variables in a DataFrame, (or a number of co
 ##Usage examples
 ```julia
 using ExperimentalAnalysis, DataFrames, GLM
-```
 
-```julia
+# Run example function
 perform_example_analysis()
+
+# Create some DataFrames and linear models and visualize the result using the package functions
 df1 = DataFrame(randn(10,4))
 df2 = DataFrame(10randn(10,4))
 modela = lm(x1 ~ x2 + x3, df1)
@@ -38,9 +44,19 @@ modelheatmap(["a", "b"], modela, modelb)
 modelheatmap(["a", "b"], [modela, modelb])
 ```
 
-The following formula syntax may be used, interpreted as: plot `x3` and `x4` as functions of `x1` and `x2`
+The following formula syntax may be used to create a scattermatrix, interpreted as: plot `x3` and `x4` as functions of `x1` and `x2`
 ```julia
 scattermatrix(df1, x3 + x4 ~ x1 + x2)
+```
+
+One can also plot all variables as functions of all other variables
+```julia
+scattermatrix(df1)
+```
+
+Or just visualize the columns in a matrix
+```julia
+scattermatrix(randn(100,3).+[1,2,3])
 ```
 
 
