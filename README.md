@@ -42,6 +42,7 @@ modela = lm(x1 ~ x2 + x3, df1)
 modelb = lm(x1 ~ x2 + x3, df2)
 modelheatmap(["a", "b"], modela, modelb)
 modelheatmap(["a", "b"], [modela, modelb])
+scattermatrix(modela)
 ```
 
 The following formula syntax may be used to create a scattermatrix, interpreted as: plot `x3` and `x4` as functions of `x1` and `x2`
