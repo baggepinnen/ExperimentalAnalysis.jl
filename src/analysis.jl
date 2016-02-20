@@ -49,9 +49,9 @@ function scattermatrix(df::DataFrame; reglines = false)
   # Plot df
   for (i,is) = enumerate(names(df))
     for (j,js) = enumerate(names(df))
-      x = convert(Array,df[Symbol(js)],0)
+      x = isa(df[Symbol(js)], Vector{Float64}) ? df[Symbol(js)] : convert(Array,df[Symbol(js)],0)
       if i != j
-        y = convert(Array,df[Symbol(is)],0)
+        y = isa(df[Symbol(js)], Vector{Float64}) ? df[Symbol(is)] : convert(Array,df[Symbol(is)],0)
         Plots.scatter!(p[i,j],x,y,legend=false,grid=true)
         if reglines
           k = [x ones(N)]\y
