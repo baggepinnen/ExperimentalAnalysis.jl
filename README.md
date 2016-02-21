@@ -1,3 +1,7 @@
+[![Coverage Status](https://coveralls.io/repos/github/baggepinnen/ExperimentalAnalysis.jl/badge.png?branch=master)](https://coveralls.io/github/baggepinnen/ExperimentalAnalysis.jl?branch=master)
+
+[![Build Status](https://travis-ci.org/baggepinnen/ExperimentalAnalysis.jl.svg?branch=master)](https://travis-ci.org/baggepinnen/ExperimentalAnalysis.jl)
+
 # ExperimentalAnalysis
 
 
@@ -71,7 +75,3 @@ Or just visualize the columns in a matrix
 ```julia
 scattermatrix(randn(100,3).+[1,2,3])
 ```
-
-
-
-[![Build Status](https://travis-ci.org/baggepinnen/ExperimentalAnalysis.jl.svg?branch=master)](https://travis-ci.org/baggepinnen/ExperimentalAnalysis.jl)
