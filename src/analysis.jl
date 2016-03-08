@@ -3,10 +3,18 @@ using GLM
 using Plots
 import PyPlot
 
-const cm = RGB{Float64}[RGB(
-clamp(min(4x - 1.5, -4x + 4.5) ,0.0,1.0),
-clamp(min(4x - 0.5, -4x + 3.5) ,0.0,1.0),
-clamp(min(4x + 0.5, -4x + 2.5) ,0.0,1.0)) for x in linspace(0.0,1.0,64)]
+function getcolormap(name="jet", n=64)
+  if name == "jet"
+    return RGB{Float64}[RGB(
+    clamp(min(4x - 1.5, -4x + 4.5) ,0.0,1.0),
+    clamp(min(4x - 0.5, -4x + 3.5) ,0.0,1.0),
+    clamp(min(4x + 0.5, -4x + 2.5) ,0.0,1.0)) for x in linspace(0.0,1.0,n)]
+  end
+end
+
+const cm = getcolormap("jet", 64)
+
+
 
 P2c(P) = cm[round(Int,(max(log10(P),-4)/4+1)*63)+1]
 function Pvalues(model)
@@ -159,7 +167,7 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
       if is != js
         Plots.scatter!(p[i,j],x,df[is],legend=false, grid=true)
         if reglines
-          k = [x ones(N)]\df[is]
+          k = [x.data ones(size(x,1))]\(df[is].data)
           px = [minimum(x), maximum(x)]
           Plots.plot!(p[i,j], px, k[1].*px + k[2], c=:red)
         end
