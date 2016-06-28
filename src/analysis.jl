@@ -1,7 +1,6 @@
 using DataFrames
 using GLM
 using Plots
-import PyPlot
 
 function getcolormap(name="jet", n=64)
   if name == "jet"
@@ -51,20 +50,20 @@ ExperimentalAnalysis.scattermatrix([modela, modelb])
 ExperimentalAnalysis.modelheatmap(["a", "b"], modela, modelb)
 ```
 """
-function scattermatrix(df::DataFrame; reglines = false)
+function scattermatrix(df::DataFrame; reglines = false, kwargs...)
   (N, Nparams) = size(df)
-  p = Plots.subplot(n = Nparams^2, nr=Nparams)
+  p = Plots.plot(layout=(Nparams,Nparams))
   # Plot df
   for (i,is) = enumerate(names(df))
     for (j,js) = enumerate(names(df))
       x = isa(df[Symbol(js)], Vector{Float64}) ? df[Symbol(js)] : convert(Array,df[Symbol(js)],0)
       if i != j
         y = isa(df[Symbol(js)], Vector{Float64}) ? df[Symbol(is)] : convert(Array,df[Symbol(is)],0)
-        Plots.scatter!(p[i,j],x,y,legend=false,grid=true)
+        Plots.scatter!(p[i,j],x,y,legend=false,grid=true, kwargs...)
         if reglines
           k = [x ones(N)]\y
           px = [minimum(x), maximum(x)]
-          Plots.plot!(p[i,j], px, k[1].*px + k[2], c=:red)
+          Plots.plot!(p[i,j], px, k[1].*px + k[2], c=:red, linewidth=2)
         end
       else
         Plots.plot!(p[i,j],x,l=:histogram, legend=false)
@@ -85,31 +84,31 @@ function scattermatrix(df::DataFrame; reglines = false)
   return p
 end
 
-function scattermatrix(df::DataFrame, f::Formula; reglines = false)
+function scattermatrix(df::DataFrame, f::Formula; reglines = false, kwargs...)
   rhs = f.rhs.args
   @assert rhs[1] == :+ "Only addition formulas supported (a ~ b + c + d + e)"
   if isa(f.lhs, Expr)
     @assert f.lhs.args[1] == :+ "Only addition formulas supported (a + b ~ c + d + e)"
-    scattermatrix_someofothers(df, f, reglines=reglines)
+    scattermatrix_someofothers(df, f, reglines=reglines, kwargs...)
   else
-    scattermatrix(df[map(Symbol,rhs[2:end])], reglines=reglines)
+    scattermatrix(df[map(Symbol,rhs[2:end])], reglines=reglines, kwargs...)
   end
 end
 
-function scattermatrix{T<:AbstractString}(A::AbstractMatrix, names::AbstractVector{T}; reglines = false)
+function scattermatrix{T<:AbstractString}(A::AbstractMatrix, names::AbstractVector{T}; reglines = false, kwargs...)
   df = DataFrame(Any[A[:,i] for i = 1:size(A,2)], map(Symbol,names))
-  scattermatrix(df, reglines=reglines)
+  scattermatrix(df, reglines=reglines, kwargs...)
 end
 
 
-function scattermatrix{T <: Real}(A::AbstractMatrix{T}; reglines = false)
+function scattermatrix{T <: Real}(A::AbstractMatrix{T}; reglines = false, kwargs...)
   df = DataFrame(A)
-  scattermatrix(df, reglines=reglines)
+  scattermatrix(df, reglines=reglines, kwargs...)
 end
 
 
-scattermatrix(model::DataFrames.DataFrameRegressionModel) = scattermatrix([model])
-function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractVector{T})
+scattermatrix(model::DataFrames.DataFrameRegressionModel; kwargs...) = scattermatrix([model]; kwargs...)
+function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractVector{T}; kwargs...)
   Nparams = size(models[1].model.pp.X,2)-1
   Nmodels = length(models)
   p = Plots.subplot(n=Nmodels*Nparams, nc=Nparams)
@@ -127,7 +126,7 @@ function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractV
     yhat = predict(model)
     for j = 1:size(data,2)
       x = data[:,j]
-      Plots.scatter!(p[i,j],x,y,legend=false,grid=true)
+      Plots.scatter!(p[i,j],x,y; legend=false,grid=true, kwargs...)
       # Regline
       minx,mini = findmin(x)
       maxx,maxi = findmax(x)
@@ -151,7 +150,7 @@ function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractV
 
 end
 
-function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
+function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false, kwargs...)
 
   Nl = length(f.lhs.args)-1
   Nr = length(f.rhs.args)-1
@@ -165,11 +164,11 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
       namesr[j] = "\$"*string(js)*"\$"
       x = df[js]
       if is != js
-        Plots.scatter!(p[i,j],x,df[is],legend=false, grid=true)
+        Plots.scatter!(p[i,j],x,df[is],legend=false, grid=true, kwargs...)
         if reglines
           k = [x.data ones(size(x,1))]\(df[is].data)
           px = [minimum(x), maximum(x)]
-          Plots.plot!(p[i,j], px, k[1].*px + k[2], c=:red)
+          Plots.plot!(p[i,j], px, k[1].*px + k[2], c=:red, linewidth=2)
         end
       else
         Plots.plot!(p[i,j],df[is],l=:histogram, legend=false)
@@ -236,11 +235,7 @@ function modelheatmap{T<:DataFrames.DataFrameRegressionModel, D<: AbstractString
     P[:,i] = Pvalues(mm.model)
   end
   logP = max(log10(P),-4)
-  p = PyPlot.matshow(logP')
-  PyPlot.xticks(eachindex(tickvec)-1, tickvec)
-  PyPlot.yticks(eachindex(modelnames)-1, modelnames)
-  PyPlot.title("log(P)-values")
-  PyPlot.colorbar()
+  p = heatmap(tickvec, modelnames, logP', title="log(P)-values", colorbar=true)
   p
 end
 
