@@ -1,8 +1,6 @@
 using DataFrames
 using GLM
 using Plots
-import PyPlot
-
 function getcolormap(name="jet", n=64)
   if name == "jet"
     return RGB{Float64}[RGB(
@@ -52,26 +50,26 @@ ExperimentalAnalysis.modelheatmap(["a", "b"], modela, modelb)
 ```
 """
 function scattermatrix(df::DataFrame; reglines = false)
-  (N, Nparams) = size(df)
-  p = Plots.subplot(n = Nparams^2, nr=Nparams)
+  N, Nparams = size(df)
+  p = plot(layout=(Nparams, Nparams))
   # Plot df
   for (i,is) = enumerate(names(df))
     for (j,js) = enumerate(names(df))
       x = isa(df[Symbol(js)], Vector{Float64}) ? df[Symbol(js)] : convert(Array,df[Symbol(js)],0)
       if i != j
         y = isa(df[Symbol(js)], Vector{Float64}) ? df[Symbol(is)] : convert(Array,df[Symbol(is)],0)
-        Plots.scatter!(p[i,j],x,y,legend=false,grid=true)
+        scatter!(p[i,j],x,y,legend=false,grid=true)
         if reglines
           k = [x ones(N)]\y
           px = [minimum(x), maximum(x)]
-          Plots.plot!(p[i,j], px, k[1].*px + k[2], c=:red)
+          plot!(p[i,j], px, k[1].*px + k[2], c=:red)
         end
       else
-        Plots.plot!(p[i,j],x,l=:histogram, legend=false)
+        plot!(p[i,j],x,l=:histogram, legend=false)
       end
     end
   end
-  names_ = map(string,names(df))
+  names_ = string.(names(df))
   for i = 1:Nparams
     plot!(p[1,i], title=("\$"*names_[i]*"\$"))
     plot!(p[i,1], ylabel=("\$"*names_[i]*"\$"))
@@ -92,12 +90,12 @@ function scattermatrix(df::DataFrame, f::Formula; reglines = false)
     @assert f.lhs.args[1] == :+ "Only addition formulas supported (a + b ~ c + d + e)"
     scattermatrix_someofothers(df, f, reglines=reglines)
   else
-    scattermatrix(df[map(Symbol,rhs[2:end])], reglines=reglines)
+    scattermatrix(df[Symbol.(rhs[2:end])], reglines=reglines)
   end
 end
 
 function scattermatrix{T<:AbstractString}(A::AbstractMatrix, names::AbstractVector{T}; reglines = false)
-  df = DataFrame(Any[A[:,i] for i = 1:size(A,2)], map(Symbol,names))
+  df = DataFrame(Any[A[:,i] for i = 1:size(A,2)], Symbol.(names))
   scattermatrix(df, reglines=reglines)
 end
 
@@ -112,7 +110,7 @@ scattermatrix(model::DataFrames.DataFrameRegressionModel) = scattermatrix([model
 function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractVector{T})
   Nparams = size(models[1].model.pp.X,2)-1
   Nmodels = length(models)
-  p = Plots.subplot(n=Nmodels*Nparams, nc=Nparams)
+  p = plot(layout=(Nmodels, Nparams))
 
 
   # Plot df
@@ -127,14 +125,14 @@ function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractV
     yhat = predict(model)
     for j = 1:size(data,2)
       x = data[:,j]
-      Plots.scatter!(p[i,j],x,y,legend=false,grid=true)
+      scatter!(p[i,j],x,y,legend=false,grid=true)
       # Regline
       minx,mini = findmin(x)
       maxx,maxi = findmax(x)
       py = yhat[[mini, maxi]]
       px = [minx, maxx]
 
-      Plots.plot!(p[i,j], px, py, c=P2c(P[j+1]))
+      plot!(p[i,j], px, py, c=P2c(P[j+1]))
     end
   end
   names_ = map(x->replace(string(x),"&","\\cdot"),models[1].mf.terms.terms)
@@ -155,7 +153,7 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
 
   Nl = length(f.lhs.args)-1
   Nr = length(f.rhs.args)-1
-  p = Plots.subplot(n = Nl*Nr, nr=Nl)
+  p = plot(layout=(Nr, Nl))
   # Plot df
   namesl = Array(AbstractString,Nl)
   namesr = Array(AbstractString,Nr)
@@ -165,14 +163,14 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
       namesr[j] = "\$"*string(js)*"\$"
       x = df[js]
       if is != js
-        Plots.scatter!(p[i,j],x,df[is],legend=false, grid=true)
+        scatter!(p[i,j],x,df[is],legend=false, grid=true)
         if reglines
           k = [x.data ones(size(x,1))]\(df[is].data)
           px = [minimum(x), maximum(x)]
-          Plots.plot!(p[i,j], px, k[1].*px + k[2], c=:red)
+          plot!(p[i,j], px, k[1].*px + k[2], c=:red)
         end
       else
-        Plots.plot!(p[i,j],df[is],l=:histogram, legend=false)
+        plot!(p[i,j],df[is],l=:histogram, legend=false)
       end
     end
   end
@@ -236,29 +234,24 @@ function modelheatmap{T<:DataFrames.DataFrameRegressionModel, D<: AbstractString
     P[:,i] = Pvalues(mm.model)
   end
   logP = max(log10(P),-4)
-  p = PyPlot.matshow(logP')
-  PyPlot.xticks(eachindex(tickvec)-1, tickvec)
-  PyPlot.yticks(eachindex(modelnames)-1, modelnames)
-  PyPlot.title("log(P)-values")
-  PyPlot.colorbar()
-  p
+  p = heatmap(logP', xticks=(eachindex(tickvec)-1, tickvec), yticks=(eachindex(modelnames)-1, modelnames), title="log(P)-values", colorbar=true)
 end
 
 
-
+#
 
 # Example
 
 function perform_example_analysis()
-  A = readcsv(Pkg.dir("ExperimentalAnalysis","src","results.csv"));
+  A = readcsv(Pkg.dir("ExperimentalAnalysis.jl","src","results.csv"));
 
-  df = DataFrame([A[2:end,i] for i = 1:size(A,2)], map(Symbol,A[1,:][:]));
+  df = DataFrame(Any[A[2:end,i] for i = 1:size(A,2)], Symbol.(A[1,:][:]));
   pool!(df,[:Location, :Substract, :Trial]);
 
   for name in names(df)
     s = Symbol(name)
     if !isa(df[s], DataArrays.PooledDataArray)
-      df[s] = map(Float64,df[s])
+      df[s] = Float64.(df[s])
     end
   end
 
@@ -266,9 +259,9 @@ function perform_example_analysis()
 
   model = lm(percentage ~ galacosidase +  endomannanase + Firstratio + Duration, df)
 
-  scattermatrix(df[[:percentage, :galacosidase, :endomannanase, :Biocelulasa, :Firstratio, :Secondratio, :Duration]])
-  scattermatrix(model)
-  modelheatmap(model)
+  scattermatrix(df[[:percentage, :galacosidase, :endomannanase, :Biocelulasa, :Firstratio, :Secondratio, :Duration]]);gui()
+  scattermatrix(model);gui()
+  modelheatmap(model);gui()
 
   return nothing
 end
