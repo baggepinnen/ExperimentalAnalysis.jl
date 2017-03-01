@@ -243,7 +243,7 @@ end
 # Example
 
 function perform_example_analysis()
-  A = readcsv(Pkg.dir("ExperimentalAnalysis.jl","src","results.csv"));
+  A = readcsv(joinpath(dirname(@__FILE__),"results.csv"));
 
   df = DataFrame(Any[A[2:end,i] for i = 1:size(A,2)], Symbol.(A[1,:][:]));
   pool!(df,[:Location, :Substract, :Trial]);
