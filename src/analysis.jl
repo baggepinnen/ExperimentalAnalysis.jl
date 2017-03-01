@@ -58,27 +58,27 @@ function scattermatrix(df::DataFrame; reglines = false)
       x = isa(df[Symbol(js)], Vector{Float64}) ? df[Symbol(js)] : convert(Array,df[Symbol(js)],0)
       if i != j
         y = isa(df[Symbol(js)], Vector{Float64}) ? df[Symbol(is)] : convert(Array,df[Symbol(is)],0)
-        scatter!(p[j,i],x,y,legend=false,grid=true)
+        scatter!(p[i,j],x,y,legend=false,grid=true)
         if reglines
           k = [x ones(N)]\y
           px = [minimum(x), maximum(x)]
-          plot!(p[j,i], px, k[1].*px + k[2], c=:red)
+          plot!(p[i,j], px, k[1].*px + k[2], c=:red)
         end
       else
-        plot!(p[j,i],x,l=:histogram, legend=false)
+        plot!(p[i,j],x,l=:histogram, legend=false)
       end
     end
   end
   names_ = string.(names(df))
   for i = 1:Nparams
-    plot!(p[1,i], title=("\$"*names_[i]*"\$"))
-    plot!(p[i,1], ylabel=("\$"*names_[i]*"\$"))
+    plot!(p[1,i], title=(names_[i]))
+    plot!(p[i,1], ylabel=(names_[i]))
   end
   for i = 1:Nparams-1, j = 1:Nparams
-    plot!(p[j,i], xticks=Float64[])
+    plot!(p[i,j], xticks=Float64[])
   end
   for i = 1:Nparams, j = 2:Nparams
-    plot!(p[j,i], yticks=Float64[])
+    plot!(p[i,j], yticks=Float64[])
   end
   return p
 end
@@ -119,31 +119,31 @@ function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractV
     data = model.model.pp.X[:,2:end]
     y = df[:,1]
     names_ = names(df)
-    plot!(p[i,1], ylabel=("\$"*string(names_[1])*"\$"))
+    plot!(p[i,1], ylabel=(string(names_[1])))
     # P-value color coding
     P = Pvalues(model)
     yhat = predict(model)
     for j = 1:size(data,2)
       x = data[:,j]
-      scatter!(p[j,i],x,y,legend=false,grid=true)
+      scatter!(p[i,j],x,y,legend=false,grid=true)
       # Regline
       minx,mini = findmin(x)
       maxx,maxi = findmax(x)
       py = yhat[[mini, maxi]]
       px = [minx, maxx]
 
-      plot!(p[j,i], px, py, c=P2c(P[j+1]))
+      plot!(p[i,j], px, py, c=P2c(P[j+1]))
     end
   end
   names_ = map(x->replace(string(x),"&","\\cdot"),models[1].mf.terms.terms)
   for i = 1:Nparams
-    plot!(p[1,i], title=("\$"*names_[i]*"\$"))
+    plot!(p[1,i], title=(names_[i]))
   end
   for i = 1:Nmodels-1, j = 1:Nparams
-    plot!(p[j,i], xticks=Float64[])
+    plot!(p[i,j], xticks=Float64[])
   end
   for i = 1:Nmodels, j = 2:Nparams
-    plot!(p[j,i], yticks=Float64[])
+    plot!(p[i,j], yticks=Float64[])
   end
   return p
 
@@ -153,24 +153,24 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
 
   Nl = length(f.lhs.args)-1
   Nr = length(f.rhs.args)-1
-  p = plot(layout=(Nr, Nl))
+  p = plot(layout=(Nl, Nr))
   # Plot df
   namesl = Array(AbstractString,Nl)
   namesr = Array(AbstractString,Nr)
   for (i,is) = enumerate(f.lhs.args[2:end])
     for (j,js) = enumerate(f.rhs.args[2:end])
-      namesl[i] = "\$"*string(is)*"\$"
-      namesr[j] = "\$"*string(js)*"\$"
-      x = df[js]
+      namesl[i] = string(is)
+      namesr[j] = string(js)
+      column = df[js]
       if is != js
-        scatter!(p[j,i],x,df[is],legend=false, grid=true)
+        scatter!(p[i,j],column,df[is],legend=false, grid=true)
         if reglines
-          k = [x.data ones(size(x,1))]\(df[is].data)
-          px = [minimum(x), maximum(x)]
-          plot!(p[j,i], px, k[1].*px + k[2], c=:red)
+          k = [column ones(size(column,1))]\(df[is])
+          column_bounds = [minimum(column), maximum(column)]
+          plot!(p[i,j], column_bounds, k[1].*column_bounds + k[2], c=:red)
         end
       else
-        plot!(p[j,i],df[is],l=:histogram, legend=false)
+        plot!(p[i,j],df[is],l=:histogram, legend=false)
       end
     end
   end
@@ -182,10 +182,10 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
     plot!(p[i,1], ylabel=namesl[i])
   end
   for i = 1:Nl-1, j = 1:Nr
-    plot!(p[j,i], xticks=Float64[])
+    plot!(p[i,j], xticks=Float64[])
   end
   for i = 1:Nl, j = 2:Nr
-    plot!(p[j,i], yticks=Float64[])
+    plot!(p[i,j], yticks=Float64[])
   end
   return p
 end
@@ -229,7 +229,7 @@ function modelheatmap{T<:DataFrames.DataFrameRegressionModel, D<: AbstractString
   Nparams = length(coef(models[1].model))
   P = Array(Float64, Nparams, Nmodels)
   coefnames = GLM.coeftable(models[1]).rownms
-  tickvec = ["\$"*replace(coefnames[i],"&","\\cdot")*"\$" for i = 1:Nparams]
+  tickvec = [replace(coefnames[i],"&","\\cdot") for i = 1:Nparams]
   for (i,mm) in enumerate(models)
     P[:,i] = Pvalues(mm.model)
   end
