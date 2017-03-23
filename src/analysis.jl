@@ -149,7 +149,11 @@ function scattermatrix{T<:DataFrames.DataFrameRegressionModel}(models::AbstractV
 
 end
 
-Float(col) = isa(col,DataArrays.PooledDataArray) ? Float64.(col.refs) : col
+function Float(col)
+    isa(col,DataArrays.PooledDataArray) && return Float64.(col.refs)
+    isa(col,DataArrays.DataArray) && return Float64.(col.data)
+    col
+end
 
 function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
 
@@ -170,7 +174,7 @@ function scattermatrix_someofothers(df::DataFrame, f::Formula; reglines = false)
                     A = [column ones(size(column,1))]
                     y = Float(df[is])
                     k = A\y
-                    se = std(y-A*k)
+                    se = std(y-A*k)/√(inv(A'A)[1,1])
                     score = k[1] ./ se
                     P = 2.0 * ccdf(Normal(), abs(score))
                     column_bounds = [minimum(column), maximum(column)]
