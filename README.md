@@ -1,11 +1,13 @@
 [![Coverage Status](https://coveralls.io/repos/github/baggepinnen/ExperimentalAnalysis.jl/badge.png?branch=master)](https://coveralls.io/github/baggepinnen/ExperimentalAnalysis.jl?branch=master)
-
+[![ExperimentalAnalysis](http://pkg.julialang.org/badges/ExperimentalAnalysis_0.4.svg)](http://pkg.julialang.org/?pkg=ExperimentalAnalysis)
+[![ExperimentalAnalysis](http://pkg.julialang.org/badges/ExperimentalAnalysis_0.5.svg)](http://pkg.julialang.org/?pkg=ExperimentalAnalysis)
+[![ExperimentalAnalysis](http://pkg.julialang.org/badges/ExperimentalAnalysis_0.6.svg)](http://pkg.julialang.org/?pkg=ExperimentalAnalysis)
 [![Build Status](https://travis-ci.org/baggepinnen/ExperimentalAnalysis.jl.svg?branch=master)](https://travis-ci.org/baggepinnen/ExperimentalAnalysis.jl)
 
 # ExperimentalAnalysis
 
 
-##Functions
+## Functions
 `scattermatrix(df::DataFrame; reglines = false)`
 
 `scattermatrix(df::DataFrame, f::Formula; reglines = false)`
@@ -24,8 +26,8 @@
 
 `modelheatmap(modelnames::AbstractArray, models...)`
 
-##Example figures
-###modelheatmap
+## Example figures
+### modelheatmap
 The heatmap shows log(P)-values of the estimated parameters in a set of (generalized) linear models (GLM.jl package).
 ![window](images/heatmap.png)
 ###scattermatrix
@@ -44,7 +46,7 @@ scattermatrix(df, ex + ey + ez + er ~ Npart + σW1 + σV1 + σV2 + σV3)
 ```
 
 
-##Usage examples
+## Usage examples
 ```julia
 using ExperimentalAnalysis, DataFrames, GLM
 
