@@ -6,6 +6,7 @@
 
 # ExperimentalAnalysis
 
+**This package is unmaintained**. See [StatPlots.jl](https://github.com/JuliaPlots/StatPlots.jl), which implements parts of the functionality provided in this package.
 
 ## Functions
 `scattermatrix(df::DataFrame; reglines = false)`
